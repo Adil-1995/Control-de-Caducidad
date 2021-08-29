@@ -1,6 +1,7 @@
-<div class="card" >
-  <div class="card-body">
-    <table class="table table-striped">
+<!-- <div class="card responsive-sm ">
+  <div class="card-body "> -->
+    <div class="table-responsive">
+    <table class="table table-striped ">
       <thead>
         <tr>
           <th scope="col">Código</th>
@@ -12,37 +13,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-          <td><i class="fa fa-edit fa-lg "></i></td>
+        <tr *ngFor="let producto of productos">
+          <th scope="row">{{producto.codigo}}</th>
+          <td>{{producto.descripcion}}</td>
+          <td>{{producto.proveedor}}</td>
+          <td>{{producto.fechaCaducidad | date: 'dd/MM/yyyy'}}</td>
+          <td data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa fa-edit fa-lg "></i></td>
           <td><i class="fa fa-trash fa-lg "></i></td>
+        </tr>
 
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-          <td><i class="fa fa-edit fa-lg "></i></td>
-          <td><i class="fa fa-trash fa-lg "></i></td>
-
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Larry</td>
-          <td>the Bird</td>
-          <td>@twitter</td>
-          <td><i class="fa fa-edit fa-lg "></i></td>
-          <td><i class="fa fa-trash fa-lg "></i></td>
-        </tr>
       </tbody>
     </table>
   </div>
-</div>
-
+  <!-- </div>
+</div> -->
 
 
 <!--------------------     pagination  --------------------------------->
@@ -59,48 +43,169 @@
       <a class="page-link" href="#">Next</a>
     </li>
   </ul>
+  <div>
+    <label for="">Total productos : {{totalUsuarios}}</label>
+  </div>
 </nav>
+<!-------------------- End    pagination  --------------------------------->
+
+
+<!-------------------------- Añadir  --------------------------------->
+<div class="modal fade" id="anadirModal" tabindex="-1" aria-labelledby="anadirModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="anadirModalLabel">añadir producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="productoForm"
+              (ngSubmit) ="anadirProducto()"
+              autocomplete="off"
+              [formGroup] ="productoForm"
+              >
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Código:</label>
+            <input type="text"
+                   class="form-control"
+                   id="recipient-name"
+                   placeholder="código"
+                   formControlName="codigo"
+                   >
+
+            <label for="recipient-name" class="col-form-label">Descripción:</label>
+            <input type="text"
+                   class="form-control"
+                   id="recipient-name"
+                   placeholder="Descripción"
+                   formControlName="descripcion"
+                   >
+
+            <label for="recipient-name" class="col-form-label">Proveedor</label>
+            <input type="text"
+                   class="form-control"
+                   id="recipient-name"
+                   placeholder="Proveedor"
+                   formControlName="proveedor"
+                   >
+
+            <label for="recipient-name" class="col-form-label">Fecha de Caducidad</label>
+            <input type="date"
+                   class="form-control"
+                   id=”datepicker”
+                   placeholder="Enter a Date"
+                   formControlName="fechaCaducidad"
+                   min="{{hoy | date:'yyyy-MM-dd'}}"
+                   >
+
+            <label for="recipient-name" class="col-form-label">Avísame</label>
+            <select class="form-select"
+                    aria-label="Default select example"
+                    formControlName="avisame">
+              <option selected>Seleciona una opción</option>
+              <option value="2">2 días antes</option>
+              <option value="3">3 días antes</option>
+              <option value="4">4 días antes</option>
+              <option value="5">5 días antes</option>
+            </select>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+
+        </form>
+
+        <div class="row">
+          <div class="col text-danger">
+
+            <p *ngIf="campoNoValido('codigo')">* El codigo es obligatorio</p>
+            <p *ngIf="campoNoValido('descripcion')">* La descripcion es obligatoria</p>
+            <p *ngIf="campoNoValido('fechaCaducidad')">* La fecha de caducidad es obligatoria</p>
+            <p *ngIf="campoNoValido('avisame')">* Elige una opción de "Avísame"</p>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-------------------- End    añadir  --------------------------------->
+
+
+
+
+<!--------------------     editar  --------------------------------->
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Añadir producto</h5>
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">Código:</label>
-            <input type="text" class="form-control" id="recipient-name">
+        <form
+        autocomplete="off"
+        [formGroup] ="productoActualizadoForm"
+        (ngSubmit)="actualizarProducto()"
+        >
+    <div class="mb-3">
+      <label for="recipient-name" class="col-form-label">Código:</label>
+      <input type="text"
+             class="form-control"
+             id="recipient-name"
+             placeholder="código"
+             formControlName="codigo"
+             >
 
-            <label for="recipient-name" class="col-form-label">Descripción:</label>
-            <input type="text" class="form-control" id="recipient-name">
+      <label for="recipient-name" class="col-form-label">Descripción:</label>
+      <input type="text"
+             class="form-control"
+             id="recipient-name"
+             placeholder="Descripción"
+             formControlName="descripcion"
+             >
 
-            <label for="recipient-name" class="col-form-label">Proveedor</label>
-            <input type="text" class="form-control" id="recipient-name">
+      <label for="recipient-name" class="col-form-label">Proveedor</label>
+      <input type="text"
+             class="form-control"
+             id="recipient-name"
+             placeholder="Proveedor"
+             formControlName="proveedor"
+             >
 
-            <label for="recipient-name" class="col-form-label">Fecha de Caducidad</label>
-            <input type="date" class="form-control" id=”datepicker” placeholder="Enter a Date">
+      <label for="recipient-name" class="col-form-label">Fecha de Caducidad</label>
+      <input type="date"
+             class="form-control"
+             id=”datepicker”
+             placeholder="Enter a Date"
+             formControlName="fechaCaducidad"
+             min="{{hoy | date:'yyyy-MM-dd'}}"
+             >
 
-            <label for="recipient-name" class="col-form-label">Avísame</label>
-            <select class="form-select" aria-label="Default select example">
-              <option selected>Seleciona una opción</option>
-              <option value="1">2 días antes</option>
-              <option value="2">4 días antes</option>
-              <option value="3">5 días antes</option>
-              <option value="4">6 días antes</option>
-            </select>
-          </div>
+      <label for="recipient-name" class="col-form-label">Avísame</label>
+      <select class="form-select"
+              aria-label="Default select example"
+              formControlName="avisame">
+        <option selected>Seleciona una opción</option>
+        <option value="2">2 días antes</option>
+        <option value="3">3 días antes</option>
+        <option value="4">4 días antes</option>
+        <option value="5">5 días antes</option>
+      </select>
+    </div>
 
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
 
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">Guardar</button>
+  </form>
       </div>
     </div>
   </div>
 </div>
-
+<!--------------------   End   editar  --------------------------------->
